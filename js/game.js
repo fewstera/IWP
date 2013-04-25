@@ -7,11 +7,16 @@ $(document).ready(function(){
 	
 	var bubbleRadius = Math.round(bubbleSprite.width/2); //The diameter of the bubble in pixels
 	var lineDistance = 150; //The distance between each line in pixels
+	var startingSpeed = 7; //The starting speed of the game (Lower = Faster)
+	var scoreToIncreaseSpeed = 150; //Every time the players score reachs a multiple of this number the speed will increase. 
+	
 	var gameLines = [];
 
 	var bubbleX = Math.round((canvasWidth/2)-bubbleRadius);
 	var bubbleY = Math.round((canvasHeight/2)-bubbleRadius);
 
+	var playerScore = 0;
+	var scoreLoopCounter = 0; //The loop to slow down the score increment
 	var isDead; //Value for if the bubble is dead 
 
 	function init(){
@@ -26,6 +31,8 @@ $(document).ready(function(){
 	
 	
 	function startMouseGame(){
+		toggleCursor(false);
+		playerScore = 0;
 		isDead = false;
 		canvas.addEventListener('mousemove', mouseMoveBubble, false);
 		createStartingLines();
@@ -35,9 +42,17 @@ $(document).ready(function(){
 	
 	function mouseMoveBubble(event){
 		var mousePos = getMousePos(event);
-		bubbleX = Math.round(mousePos.x-bubbleRadius);
-		bubbleY = Math.round(mousePos.y-bubbleRadius);
-		paint();
+		moveBubbleTo(Math.round(mousePos.x-bubbleRadius), Math.round(mousePos.y-bubbleRadius));
+	}
+	
+	function moveBubbleTo(x, y){
+		if(!isDead){
+			bubbleX = x;
+			bubbleY = y;
+			paint();
+		}else{
+			deadSequence();
+		}
 	}
 	
 	function createStartingLines(){
@@ -51,10 +66,13 @@ $(document).ready(function(){
 	//Creates a line object at position x
 	function createNewLine(position){
 		var line = new Object();
-		var randomOpening = Math.floor((Math.random()*(51)+20)/spikeSprite.width)*spikeSprite.width; //The extra bit of room
+		
+		//The size of the opening for the bubble (Between 1.5*(The bubble width) and 2.5*(The bubble width))
+		var openingSize = Math.floor(bubbleSprite.width*1.5 + (Math.random()*bubbleSprite.width)); 
+		
 		line.position = position;
-		line.leftLineSize = Math.floor(Math.random() * ((canvasWidth-bubbleSprite.width-randomOpening) + 1)/spikeSprite.width)*spikeSprite.width;
-		line.openingSize = bubbleSprite.width+randomOpening;
+		line.leftLineSize = Math.floor(Math.random() * ((canvasWidth-openingSize) + 1)/spikeSprite.width)*spikeSprite.width;
+		line.rightLineSize = Math.ceil((canvasWidth-openingSize-line.leftLineSize)/spikeSprite.width)*spikeSprite.width;
 		return line;
 	}
 	
@@ -68,7 +86,27 @@ $(document).ready(function(){
 		}
 		paint();
 		if(!isDead){
-			setTimeout(update, 1);
+			setTimeout(update, getGameSpeed());
+		}else{
+			deadSequence();
+		}
+		if(scoreLoopCounter>12){
+			$('#score').html(++playerScore);
+			$('#speed').html('Speed: ' + ((startingSpeed+2)/(getGameSpeed()+2)).toFixed(2));
+			scoreLoopCounter = 0;
+		}else{
+			scoreLoopCounter++;
+		}
+		
+	}
+	
+	//Returns the 
+	function getGameSpeed(){
+		var speedIncreaser = Math.floor(playerScore/scoreToIncreaseSpeed);
+		if(speedIncreaser>=startingSpeed){
+			return 1;
+		}else{
+			return startingSpeed-speedIncreaser;
 		}
 	}
 	
@@ -89,17 +127,13 @@ $(document).ready(function(){
 				if(isLineCollision(gameLines[i])){
 					isDead = true;
 				}
-				
 			}
-		}	
-		
-			
-		
+		}			
 	}
 	
 	function drawLine(line){
 		var firstSpikesToDraw = line.leftLineSize/spikeSprite.width;
-		var secondSpikesToDraw = (canvasWidth-line.leftLineSize-line.openingSize)/spikeSprite.width;
+		var secondSpikesToDraw = line.rightLineSize/spikeSprite.width;
 
 		//Draw first point of line
 		for(var i = 0; i<firstSpikesToDraw; i++){
@@ -119,29 +153,62 @@ $(document).ready(function(){
 	//This function detects if the bubble is on contact with 
 	function isLineCollision(line){
 
-		if((Math.abs(line.position-bubbleY-3)<=bubbleRadius)||(Math.abs(line.position-bubbleY-20)<=bubbleRadius)){
+		if((Math.abs(line.position-bubbleY-5)<=bubbleRadius)||(Math.abs(line.position-bubbleY-20)<=bubbleRadius)){
 			var trueBubbleX = (bubbleX+bubbleRadius);
 			var trueBubbleY = (bubbleY+bubbleRadius);
 		
-			//Check if we have a left hand spike
+			//Check if we have a left hand spide
 			if(line.leftLineSize>=spikeSprite.width){
-				//Check the left hand line
+
+				//Check if we have directly hit the left hand line
 				if(line.leftLineSize>=trueBubbleX){
 					return true;
 				}
+				
 				//Check the edge of left hand line
 				//Works by measuring the distance between the edge of the line and the center of the bubble
 				//if the distance is less than the radius we have a collision
 				var topDistanceToCircle = Math.sqrt(Math.pow(trueBubbleX-line.leftLineSize, 2)+Math.pow(trueBubbleY-line.position, 2));
 				var bottomDistanceToCircle = Math.sqrt(Math.pow(trueBubbleX-line.leftLineSize-5, 2)+Math.pow(trueBubbleY-line.position-15, 2));
-				if((topDistanceToCircle<bubbleRadius-7)||(bottomDistanceToCircle<bubbleRadius-6)){
-					console.log('Top: ' + topDistanceToCircle + '\nBottom: ' + bottomDistanceToCircle);
+				if((topDistanceToCircle<bubbleRadius-7)||(bottomDistanceToCircle<bubbleRadius-8)){
+					return true;
+				}
+			}
+			
+			//Check if we have a right hand spide
+			if(line.rightLineSize>=spikeSprite.width){
+				
+				var rightLinePos = (canvasWidth-line.rightLineSize); //X coord of that start of the right line
+				
+				//Check if we have directly hit the right hand line
+				if(rightLinePos<trueBubbleX){
+					return true;
+				}
+				
+				//Check the edge of right hand line
+				var topDistanceToCircle = Math.sqrt(Math.pow(trueBubbleX-rightLinePos, 2)+Math.pow(trueBubbleY-line.position, 2));
+				var bottomDistanceToCircle = Math.sqrt(Math.pow(trueBubbleX-rightLinePos+5, 2)+Math.pow(trueBubbleY-line.position-15, 2));
+				if((topDistanceToCircle<bubbleRadius-7)||(bottomDistanceToCircle<bubbleRadius-8)){
 					return true;
 				}
 			}
 			
 		}
 		return false;
+	}
+	
+	function deadSequence(){
+		toggleCursor(true);
+	}
+	
+	function toggleCursor(on){
+		if(on){
+			//Show cursor
+			$('#gameCanvas').css("cursor", "auto");
+		}else{
+			//Hide Cursor
+			$('#gameCanvas').css("cursor", "none");
+		}
 	}
 	
 	//Function originally found at http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/

@@ -1,5 +1,22 @@
-#gameCanvas{
+
+#gameContainer{
+	
+	position: relative;
+	width: 450px;
 	margin: 30px auto 0px auto;
-	display: block;
-	cursor: none;
+}
+
+#gameContainer #gameCanvas{
+	position: absolute;
+	z-index: -10;
+	top: 10px;
+}
+
+#gameContainer #speed{
+	position: absolute;
+}
+
+#gameContainer #score{
+	position: absolute;
+	top: 20px;
 }
