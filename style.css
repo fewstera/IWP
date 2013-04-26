@@ -1,22 +1,53 @@
 
 #gameContainer{
-	
+	border-color: #17407c;
 	position: relative;
-	width: 450px;
+	width: 454px;
 	margin: 30px auto 0px auto;
 }
 
+
+
+#gameContainer #gameHeader{
+	margin: 0;
+	height: 60px;
+	width: 450px;
+	border-left: 2px solid #17407c;
+	border-top: 2px solid #17407c;
+	border-right: 2px solid #17407c;
+	background-color: #275eb0;
+	color: #FFF;
+	font: 21px tahoma;
+}
+
+#gameContainer #gameHeader #speed{
+	display: none;
+}
+
+#gameContainer #gameHeader #score{
+	display: none;
+}
+
+
 #gameContainer #gameCanvas{
-	position: absolute;
-	z-index: -10;
-	top: 10px;
+	border: 2px solid #17407c;
+	z-index: -1;
+}
+
+#gameContainer #gameTitle{
+	width: 120px;
+	margin: 17px auto 0px auto;
 }
 
 #gameContainer #speed{
-	position: absolute;
+	margin-top: 17px;
+	margin-left: 17px;
+	float: left;
 }
 
 #gameContainer #score{
-	position: absolute;
-	top: 20px;
+	margin-right: 17px;
+	margin-top: 17px;
+	float: right;
+
 }

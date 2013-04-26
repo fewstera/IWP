@@ -4,11 +4,11 @@ $(document).ready(function(){
 	var ctx = canvas.getContext("2d");
 	var canvasWidth = $("#gameCanvas").width();
 	var canvasHeight = $("#gameCanvas").height();
-	
+		
 	var bubbleRadius = Math.round(bubbleSprite.width/2); //The diameter of the bubble in pixels
 	var lineDistance = 150; //The distance between each line in pixels
 	var startingSpeed = 7; //The starting speed of the game (Lower = Faster)
-	var scoreToIncreaseSpeed = 150; //Every time the players score reachs a multiple of this number the speed will increase. 
+	var scoreToIncreaseSpeed = 75; //Every time the players score reachs a multiple of this number the speed will increase. 
 	
 	var gameLines = [];
 
@@ -20,7 +20,7 @@ $(document).ready(function(){
 	var isDead; //Value for if the bubble is dead 
 
 	function init(){
-		startMouseGame();
+		startGame(true);
 	}
 	
 	var sprites = new Image();
@@ -30,11 +30,22 @@ $(document).ready(function(){
 	sprites.onload = init;
 	
 	
-	function startMouseGame(){
+	function startGame(isMouse){
 		toggleCursor(false);
 		playerScore = 0;
 		isDead = false;
-		canvas.addEventListener('mousemove', mouseMoveBubble, false);
+		
+		//Fade the title and show the speed and score box
+		$('#gameTitle').fadeOut(1000, function(){
+			$('#speed').fadeIn(500);
+			$('#score').fadeIn(500);
+		})
+		
+		if(isMouse){
+			canvas.addEventListener('mousemove', mouseMoveBubble, false);
+		}else{
+			//Keyboard game
+		}
 		createStartingLines();
 		paint();
 		update();
@@ -56,7 +67,7 @@ $(document).ready(function(){
 	}
 	
 	function createStartingLines(){
-		var numberLines = Math.floor(canvasHeight/lineDistance);
+		var numberLines = Math.ceil(canvasHeight/lineDistance);
 		for(var i = 0; i<numberLines; i++){
 			gameLines.push(createNewLine((-lineDistance)*(i+1)));
 		}
@@ -91,8 +102,8 @@ $(document).ready(function(){
 			deadSequence();
 		}
 		if(scoreLoopCounter>12){
-			$('#score').html(++playerScore);
-			$('#speed').html('Speed: ' + ((startingSpeed+2)/(getGameSpeed()+2)).toFixed(2));
+			$('#score').html('Current Score: ' + ++playerScore);
+			$('#speed').html('Speed: ' + ((startingSpeed+2)/(getGameSpeed()+2)).toFixed(2) + 'x');
 			scoreLoopCounter = 0;
 		}else{
 			scoreLoopCounter++;
@@ -112,12 +123,9 @@ $(document).ready(function(){
 	
 	function paint()
 	{
-		
+		//canvas.width = canvas.width;
 		//Repaint the canvas everytime
 		ctx.drawImage(sprites, bgSprite.x, bgSprite.y, bgSprite.width, bgSprite.height, 0, 0, canvasWidth, canvasHeight);   
-		ctx.strokeStyle = "black";
-		ctx.strokeRect(0, 0, canvasWidth, canvasHeight);
-		
 		ctx.drawImage(sprites, bubbleSprite.x, bubbleSprite.y, bubbleSprite.width, bubbleSprite.height, 
 			bubbleX, bubbleY, bubbleSprite.width, bubbleSprite.height);  
 		
@@ -170,7 +178,7 @@ $(document).ready(function(){
 				//if the distance is less than the radius we have a collision
 				var topDistanceToCircle = Math.sqrt(Math.pow(trueBubbleX-line.leftLineSize, 2)+Math.pow(trueBubbleY-line.position, 2));
 				var bottomDistanceToCircle = Math.sqrt(Math.pow(trueBubbleX-line.leftLineSize-5, 2)+Math.pow(trueBubbleY-line.position-15, 2));
-				if((topDistanceToCircle<bubbleRadius-7)||(bottomDistanceToCircle<bubbleRadius-8)){
+				if((topDistanceToCircle<bubbleRadius-7)||(bottomDistanceToCircle<bubbleRadius-7)){
 					return true;
 				}
 			}
@@ -188,7 +196,7 @@ $(document).ready(function(){
 				//Check the edge of right hand line
 				var topDistanceToCircle = Math.sqrt(Math.pow(trueBubbleX-rightLinePos, 2)+Math.pow(trueBubbleY-line.position, 2));
 				var bottomDistanceToCircle = Math.sqrt(Math.pow(trueBubbleX-rightLinePos+5, 2)+Math.pow(trueBubbleY-line.position-15, 2));
-				if((topDistanceToCircle<bubbleRadius-7)||(bottomDistanceToCircle<bubbleRadius-8)){
+				if((topDistanceToCircle<bubbleRadius-7)||(bottomDistanceToCircle<bubbleRadius-7)){
 					return true;
 				}
 			}
