@@ -137,7 +137,8 @@ function setComplete(achi){
 };
 
 function makeNotification(achi){
-    var noty = $('#achievmentBox').noty({
+	achievementSound.play();
+	var noty = $('#achievmentBox').noty({
 			text: 'Achievment Unlocked: ' + achi.name + ' - ' + achi.desc,
 			timeout: 2000,
 			dismissQueue: false
@@ -152,7 +153,6 @@ function getStorageAchievements(){
 }
 
 function loadAchievementsPage(){
-
 	$('#gameTitle').fadeOut(200, function(){
 		$('#gameTitle').html('Achievements');
 		$('#gameTitle').fadeIn(500);

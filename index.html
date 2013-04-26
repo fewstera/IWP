@@ -20,22 +20,45 @@
 					<li><a href="#" id="mouseStart">Play with mouse</a></li>
 					<li><a href="#" id="keyboardStart">Play with keyboard</a></li>
 					<li><a href="#" id="showAchievements">Achievements</a></li>
-					<li><a href="#">Highscores</a></li>
+					<li><a href="#" id="loadHighscores">Highscores</a></li>
 					<li><a href="#" id="helpButton">Help</a></li>
 
 				</ul>
 			</div>
 			<div id="achievmentList">
 				<ul>
-					
 				</ul>
 			</div>
 			<canvas id="gameCanvas" width="450" height="600"></canvas>
 			<div id="gameReview">
 				<p>Score: <span id="finalScore">0</span></p>
 				<ul>
+					<li><a href="#" id="submitScoreButton">Submit Score</a></li>
 					<li><a href="#" id="playAgain">Play again</a></li>
 					<li><a href="#" id="backToMenu">Back to menu</a></li>
+				</ul>
+			</div>
+			<div id="submitScore">
+				<p>Score: <span id="postScore">0</span></p>
+				<p><input id="gameText" type="text" placeholder="Enter name"></p>
+				<ul>
+					<li><a href="#" id="postScore">Submit Score</a></li>
+
+				</ul>
+			</div>
+			<div id="highscores">
+				<ul>
+					<li>1. Aidan (Score: 1230)</li>
+					<li>2. Test (Score: 830)</li>
+					<li>3. Aidan (Score: 630)</li>
+					<li>4. Test (Score: 420)</li>
+					<li>5. Aidan (Score: 120)</li>
+					<li>6. Test (Score: 99)</li>
+					<li>7. Aidan (Score: 70)</li>
+					<li>8. Test (Score: 40)</li>
+					<li>9. Aidan (Score: 30)</li>
+					<li>10. Test (Score: 29)</li>
+					<li><a href="#" onclick="backToMenu(); return false;">Back to menu</a></li>
 				</ul>
 			</div>
 		</div>
@@ -50,7 +73,10 @@
 		
 		<!-- Game files -->
 		<script src="js/sprites.js" type="text/javascript"></script>
+		<script src="js/sounds.js" type="text/javascript"></script>
 		<script src="js/achievements.js" type="text/javascript"></script>
+		<script src="js/highscores.js" type="text/javascript"></script>
+		<script src="js/ui_controls.js" type="text/javascript"></script>
 		<script src="js/game.js" type="text/javascript"></script>
 	</body>
 </html>
