@@ -34,6 +34,7 @@ $(document).ready(function(){
 	
 	
 	function startGame(isMouse){
+		updateGamesPlayed();
 		toggleCursor(false);
 		gameLines = [];
 		playerScore = 0;
@@ -124,6 +125,7 @@ $(document).ready(function(){
 			deadSequence();
 		}
 		if(scoreLoopCounter>12){
+			checkAchievmentProgress(playerScore, getGamesPlayed());
 			$('#score').html('Current Score: ' + ++playerScore);
 			$('#speed').html('Speed: ' + ((startingSpeed+2)/(getGameSpeed()+2)).toFixed(2) + 'x');
 			scoreLoopCounter = 0;
@@ -279,6 +281,16 @@ $(document).ready(function(){
 			$('#gameReview').fadeIn(500);
 		})
 		$('#score').fadeOut(500);
+	}
+	
+	function updateGamesPlayed(){
+		localStorage.gamesPlayed = getGamesPlayed()+1;
+	}
+	
+	function getGamesPlayed(){
+		if(!localStorage.gamesPlayed)
+			localStorage.gamesPlayed = 0;
+		return parseInt(localStorage.gamesPlayed);
 	}
 	
 	
