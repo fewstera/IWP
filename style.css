@@ -28,6 +28,41 @@
 	display: none;
 }
 
+#gameContainer #gameMenu{
+	color: #FFF;
+	font: 21px tahoma;
+	position: absolute;
+	top: 180px;
+	left: 0px;
+}
+
+#gameContainer #gameMenu ul{
+	padding:0;
+	margin:0;
+	list-style: none; 
+}
+
+#gameContainer #gameMenu ul li{
+}
+
+#gameContainer #gameMenu ul li a{
+	padding:20px 0;
+	margin: 15px 0 15px 18px;
+	width: 420px;
+	text-align: center;
+	display: block;
+	color: #FFF;
+	text-decoration: none;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	transition: background 0.2s, color 0.2s;
+}
+
+#gameContainer #gameMenu ul li a:hover{
+	color:#275eb0;
+	background:#fff;
+}
 
 #gameContainer #gameCanvas{
 	border: 2px solid #17407c;

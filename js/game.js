@@ -20,7 +20,7 @@ $(document).ready(function(){
 	var isDead; //Value for if the bubble is dead 
 
 	function init(){
-		startGame(true);
+		paintBackground();
 	}
 	
 	var sprites = new Image();
@@ -107,8 +107,7 @@ $(document).ready(function(){
 			scoreLoopCounter = 0;
 		}else{
 			scoreLoopCounter++;
-		}
-		
+		}		
 	}
 	
 	//Returns the 
@@ -123,9 +122,8 @@ $(document).ready(function(){
 	
 	function paint()
 	{
-		//canvas.width = canvas.width;
-		//Repaint the canvas everytime
-		ctx.drawImage(sprites, bgSprite.x, bgSprite.y, bgSprite.width, bgSprite.height, 0, 0, canvasWidth, canvasHeight);   
+		canvas.width = canvas.width;
+		paintBackground();
 		ctx.drawImage(sprites, bubbleSprite.x, bubbleSprite.y, bubbleSprite.width, bubbleSprite.height, 
 			bubbleX, bubbleY, bubbleSprite.width, bubbleSprite.height);  
 		
@@ -138,6 +136,10 @@ $(document).ready(function(){
 			}
 		}			
 	}
+	
+	function paintBackground(){
+		ctx.drawImage(sprites, bgSprite.x, bgSprite.y, bgSprite.width, bgSprite.height, 0, 0, canvasWidth, canvasHeight);
+	} 
 	
 	function drawLine(line){
 		var firstSpikesToDraw = line.leftLineSize/spikeSprite.width;
@@ -228,5 +230,12 @@ $(document).ready(function(){
           y: event.clientY - rect.top
         };
       }
+	
+	
+	$('#mouseStart').click(function(){
+		$('#gameMenu').fadeOut(200, function(){
+			startGame(true);
+		})
+	});
 	
 });
