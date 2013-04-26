@@ -23,7 +23,6 @@ var keenPlayer = {
 	progressCheck: function(){
 		if(!isComplete(this)){
 			if(gamesPlayed>=10){
-				
 				setComplete(this);
 				makeNotification(this);
 			}
@@ -39,7 +38,6 @@ var avidPlayer = {
 	progressCheck: function(){
 		if(!isComplete(this)){
 			if(gamesPlayed>=30){
-				
 				setComplete(this);
 				makeNotification(this);
 			}
@@ -55,7 +53,6 @@ var addiction = {
 	progressCheck: function(){
 		if(!isComplete(this)){
 			if(gamesPlayed>=30){
-				
 				setComplete(this);
 				makeNotification(this);
 			}
@@ -140,7 +137,11 @@ function setComplete(achi){
 };
 
 function makeNotification(achi){
-	alert('Completed ' + achi.name + ' - ' + achi.desc);
+    var noty = $('#achievmentBox').noty({
+			text: 'Achievment Unlocked: ' + achi.name + ' - ' + achi.desc,
+			timeout: 2000,
+			dismissQueue: false
+		});
 };
 
 function getStorageAchievements(){
@@ -148,4 +149,25 @@ function getStorageAchievements(){
 		localStorage.achievements = JSON.stringify([]);
 	}
 	return JSON.parse(localStorage.achievements);
+}
+
+function loadAchievementsPage(){
+
+	$('#gameTitle').fadeOut(200, function(){
+		$('#gameTitle').html('Achievements');
+		$('#gameTitle').fadeIn(500);
+	})
+	$('#gameMenu').fadeOut(200, function(){
+	var achievmentsHtml = '';
+	for(var i = 0; i<achievements.length; i++){
+		var completeClassString = '';
+		if(isComplete(achievements[i]))
+			completeClassString = ' class="complete"';
+		achievmentsHtml = achievmentsHtml + '<li' + completeClassString + '><span class="name">' + achievements[i].name +
+							 '</span><span class="desc">' + achievements[i].desc + '</span></li>';
+	}
+	achievmentsHtml = achievmentsHtml + '<li><a href="#" onclick="backToMenu(); return false;">Back to menu</a></li>';
+	$('#achievmentList ul').html(achievmentsHtml);
+		$('#achievmentList').fadeIn(500);
+	})
 }

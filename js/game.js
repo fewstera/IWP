@@ -325,19 +325,35 @@ $(document).ready(function(){
 		$('#gameMenu').fadeOut(200, function(){
 			startGame(false);
 		})
+		return false;
 	});
 	
 	$('#playAgain').click(function(){
 		$('#gameReview').fadeOut(200, function(){
 			startGame(playingWithMouse);
 		})
+		return false;
 	});
 	
 	$('#backToMenu').click(function(){
-		$('#gameReview').fadeOut(200, function(){
-			$('#gameMenu').fadeIn(500);
-		})
+		backToMenu();
+		return false;
 	});
+	
+	$('#helpButton').click(function(){
+		var noty = $('#achievmentBox').noty({
+			text: 'Achievment Unlocked: Speed Demon - Have a speed faster',
+			timeout: 800,
+			dismissQueue: false
+		});
+		return false;
+	});
+	
+	$('#showAchievements').click(function(){
+		loadAchievementsPage();
+		return false;
+	});
+              
 	
 	$(document).keydown(function(e){
 		if(!playingWithMouse){
@@ -349,5 +365,16 @@ $(document).ready(function(){
 			delete pressedKeys[e.which];
 		}
 	});
-	
+		
 });
+
+function backToMenu(){
+	$('#gameTitle').fadeOut(200, function(){
+		$('#gameTitle').html('Bubble Float');
+		$('#gameTitle').fadeIn(500);
+	})
+	$('#achievmentList').fadeOut(200);
+	$('#gameReview').fadeOut(200, function(){
+		$('#gameMenu').fadeIn(500);
+	})
+}
