@@ -77,7 +77,7 @@ $(document).ready(function(){
 		
 		line.position = position;
 		line.leftLineSize = Math.floor(Math.random() * ((canvasWidth-openingSize) + 1)/spikeSprite.width)*spikeSprite.width;
-		line.rightLineSize = Math.ceil((canvasWidth-openingSize-line.leftLineSize)/spikeSprite.width)*spikeSprite.width;
+		line.rightLineSize = Math.floor((canvasWidth-openingSize-line.leftLineSize)/spikeSprite.width)*spikeSprite.width;
 		return line;
 	}
 	
@@ -230,6 +230,7 @@ $(document).ready(function(){
 	}
 	
 	function deadSequence(){
+		playSound('pop');
 		toggleCursor(true);
 		if(!playingWithMouse){
 			clearInterval(keysCheckInterval);
@@ -252,6 +253,20 @@ $(document).ready(function(){
 		}, 50)
 		showGameReview();
 		
+	}
+	
+	function playSound(type){
+		switch(type){
+			case 'achievement':
+				new Audio("sounds/achiv.mp3").play();
+				break;
+			case 'pop':
+				new Audio("sounds/pop.mp3").play();
+				break;
+			case 'powerup':
+				new Audio("sounds/powerup.mp3").play();
+				break;
+		}	
 	}
 	
 	function showGameReview(){
@@ -291,6 +306,7 @@ $(document).ready(function(){
 		$('#gameMenu').fadeOut(200, function(){
 			startGame(true);
 		})
+		return false;
 	});
 	
 	$('#keyboardStart').click(function(){
