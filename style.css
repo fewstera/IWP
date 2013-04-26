@@ -3,12 +3,20 @@
 	border-color: #17407c;
 	position: relative;
 	width: 454px;
+	height: 670px;
+	overflow: hidden;
 	margin: 30px auto 0px auto;
 }
 
 
 
 #gameContainer #gameHeader{
+	-webkit-border-top-left-radius: 10px;
+	-webkit-border-top-right-radius: 10px;
+	-moz-border-radius-topleft: 10px;
+	-moz-border-radius-topright: 10px;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
 	margin: 0;
 	height: 60px;
 	width: 450px;
@@ -32,7 +40,7 @@
 	color: #FFF;
 	font: 21px tahoma;
 	position: absolute;
-	top: 180px;
+	top: 150px;
 	left: 0px;
 }
 
@@ -40,9 +48,6 @@
 	padding:0;
 	margin:0;
 	list-style: none; 
-}
-
-#gameContainer #gameMenu ul li{
 }
 
 #gameContainer #gameMenu ul li a{
@@ -60,6 +65,7 @@
 }
 
 #gameContainer #gameMenu ul li a:hover{
+	
 	color:#275eb0;
 	background:#fff;
 }
@@ -84,5 +90,54 @@
 	margin-right: 17px;
 	margin-top: 17px;
 	float: right;
+}
 
+#gameContainer #gameReview{
+	display: none;
+	position: absolute;
+	text-align: center;
+	top: 230px;
+	left:82px;
+	color: #FFF;
+	font: 21px tahoma;
+	background:#17407c;
+	opacity:0.9;
+	width:250px;
+	padding:20px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+}
+
+#gameContainer #gameReview p{
+	display:block;
+	margin:0 0 10px 0;
+	padding:0;
+}
+
+#gameContainer #gameReview ul{
+	padding:10px 0 10px 0;
+	margin:0;
+	list-style:none;
+}
+
+#gameContainer #gameReview ul li{
+	margin:10px 0;
+}
+
+#gameContainer #gameReview ul li a{
+	background:#275eb0;
+	text-decoration:none;
+	display:block;
+	color:#fff;
+	padding:10px 20px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	transition:background 0.2s, color 0.2s;
+}
+
+#gameContainer #gameReview ul li a:hover{
+	background:#fff;
+	color:#17407c;
 }

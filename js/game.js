@@ -10,8 +10,11 @@ $(document).ready(function(){
 	var startingSpeed = 7; //The starting speed of the game (Lower = Faster)
 	var scoreToIncreaseSpeed = 75; //Every time the players score reachs a multiple of this number the speed will increase. 
 	
-	var gameLines = [];
-
+	var gameLines;
+	var pressedKeys = [];
+	var keysCheckInterval; //The interval to check which keys have been pressed down
+	var playingWithMouse = null;
+	
 	var bubbleX = Math.round((canvasWidth/2)-bubbleRadius);
 	var bubbleY = Math.round((canvasHeight/2)-bubbleRadius);
 
@@ -32,38 +35,29 @@ $(document).ready(function(){
 	
 	function startGame(isMouse){
 		toggleCursor(false);
+		gameLines = [];
 		playerScore = 0;
 		isDead = false;
 		
 		//Fade the title and show the speed and score box
+
 		$('#gameTitle').fadeOut(1000, function(){
 			$('#speed').fadeIn(500);
 			$('#score').fadeIn(500);
 		})
 		
+		$('#gameCanvas').focus();
+		
 		if(isMouse){
+			playingWithMouse = true;
 			canvas.addEventListener('mousemove', mouseMoveBubble, false);
 		}else{
-			//Keyboard game
+			playingWithMouse = false;
+			keysCheckInterval = setInterval(checkKeyboardKeys, 11)
 		}
 		createStartingLines();
 		paint();
 		update();
-	}
-	
-	function mouseMoveBubble(event){
-		var mousePos = getMousePos(event);
-		moveBubbleTo(Math.round(mousePos.x-bubbleRadius), Math.round(mousePos.y-bubbleRadius));
-	}
-	
-	function moveBubbleTo(x, y){
-		if(!isDead){
-			bubbleX = x;
-			bubbleY = y;
-			paint();
-		}else{
-			deadSequence();
-		}
 	}
 	
 	function createStartingLines(){
@@ -87,6 +81,34 @@ $(document).ready(function(){
 		return line;
 	}
 	
+	function mouseMoveBubble(event){
+		var mousePos = getMousePos(event);
+		moveBubbleTo(Math.round(mousePos.x-bubbleRadius), Math.round(mousePos.y-bubbleRadius));
+	}
+	
+	function checkKeyboardKeys(){
+		if(pressedKeys[37])
+			moveBubbleTo(bubbleX-2, bubbleY);
+		if(pressedKeys[38])
+			moveBubbleTo(bubbleX, bubbleY-2);
+		if(pressedKeys[39])
+			moveBubbleTo(bubbleX+2, bubbleY);
+		if(pressedKeys[40])
+			moveBubbleTo(bubbleX, bubbleY+2);
+	}
+	
+	function moveBubbleTo(x, y){
+		if(!isDead){
+			if((x<canvasWidth-bubbleSprite.width)&&(x>0)&&(y>0)&&(y<canvasHeight-bubbleSprite.height)){
+				bubbleX = x;
+				bubbleY = y;
+				paint();
+			}
+		}else{
+			deadSequence();
+		}
+	}
+	
 	function update(){
 		for (var i = 0; i < gameLines.length; i++) {
 			gameLines[i].position++;
@@ -108,16 +130,6 @@ $(document).ready(function(){
 		}else{
 			scoreLoopCounter++;
 		}		
-	}
-	
-	//Returns the 
-	function getGameSpeed(){
-		var speedIncreaser = Math.floor(playerScore/scoreToIncreaseSpeed);
-		if(speedIncreaser>=startingSpeed){
-			return 1;
-		}else{
-			return startingSpeed-speedIncreaser;
-		}
 	}
 	
 	function paint()
@@ -157,6 +169,16 @@ $(document).ready(function(){
 		
 			ctx.drawImage(sprites, spikeSprite.x, spikeSprite.y, spikeSprite.width, spikeSprite.height, 
 				(canvasWidth-((1+i)*(spikeSprite.width))), line.position, spikeSprite.width, spikeSprite.height); 
+		}
+	}
+	
+	//Returns the 
+	function getGameSpeed(){
+		var speedIncreaser = Math.floor(playerScore/scoreToIncreaseSpeed);
+		if(speedIncreaser>=startingSpeed){
+			return 1;
+		}else{
+			return startingSpeed-speedIncreaser;
 		}
 	}
 	
@@ -209,8 +231,52 @@ $(document).ready(function(){
 	
 	function deadSequence(){
 		toggleCursor(true);
+		if(!playingWithMouse){
+			clearInterval(keysCheckInterval);
+		}else{
+			canvas.removeEventListener('mousemove', mouseMoveBubble, false);
+		}
+		ctx.globalAlpha = 0.1;
+		var alphaCount = 0;
+		var fadeOutGameInterval = setInterval(function(){
+			if(alphaCount<20){
+				ctx.globalAlpha = ctx.globalAlpha+0.02;
+				paintBackground();
+				alphaCount++;
+			}else{
+				clearInterval(fadeOutGameInterval);
+				canvas.width = canvasWidth;
+				paintBackground();
+				showGameReview();
+			}
+		}, 50)
+		showGameReview();
+		
 	}
 	
+	function showGameReview(){
+		
+		$('#finalScore').html(playerScore);
+	
+		$('#gameTitle').html('Game Over!');
+		$('#speed').fadeOut(500, function(){
+			$('#gameTitle').fadeIn(500);
+			$('#gameReview').fadeIn(500);
+		})
+		$('#score').fadeOut(500);
+	}
+	
+	
+	//Function originally found at http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/
+	//Was edited to work with my game
+	function getMousePos(event) {
+		var rect = canvas.getBoundingClientRect();
+			return {
+				x: event.clientX - rect.left,
+				y: event.clientY - rect.top
+		};
+	}
+		
 	function toggleCursor(on){
 		if(on){
 			//Show cursor
@@ -221,21 +287,39 @@ $(document).ready(function(){
 		}
 	}
 	
-	//Function originally found at http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/
-	//Was edited to work with my game
-	function getMousePos(event) {
-        var rect = canvas.getBoundingClientRect();
-        return {
-          x: event.clientX - rect.left,
-          y: event.clientY - rect.top
-        };
-      }
-	
-	
 	$('#mouseStart').click(function(){
 		$('#gameMenu').fadeOut(200, function(){
 			startGame(true);
 		})
+	});
+	
+	$('#keyboardStart').click(function(){
+		$('#gameMenu').fadeOut(200, function(){
+			startGame(false);
+		})
+	});
+	
+	$('#playAgain').click(function(){
+		$('#gameReview').fadeOut(200, function(){
+			startGame(playingWithMouse);
+		})
+	});
+	
+	$('#backToMenu').click(function(){
+		$('#gameReview').fadeOut(200, function(){
+			$('#gameMenu').fadeIn(500);
+		})
+	});
+	
+	$(document).keydown(function(e){
+		if(!playingWithMouse){
+			pressedKeys[e.which] = true;
+			e.preventDefault();
+		}
+	}).keyup(function(e) {
+		if(!playingWithMouse){
+			delete pressedKeys[e.which];
+		}
 	});
 	
 });
