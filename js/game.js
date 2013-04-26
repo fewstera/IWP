@@ -4,20 +4,21 @@ var ctx = canvas.getContext("2d");
 var canvasWidth = $("#gameCanvas").width();
 var canvasHeight = $("#gameCanvas").height();
 	
-var bubbleRadius = Math.round(bubbleSprite.width/2); //The diameter of the bubble in pixels
+var bubbleRadius = Math.round(bubbleSprite.width/2); //The radius of the bubble in pixels
 var lineDistance = 150; //The distance between each line in pixels
 var startingSpeed = 7; //The starting speed of the game (Lower = Faster)
 var scoreToIncreaseSpeed = 75; //Every time the players score reachs a multiple of this number the speed will increase. 
+var gameIsPaused = false; //If the game is paused
 
-var gameLines;
-var pressedKeys = [];
+var gameLines; //An array to hold the lines of spikes
+var pressedKeys = []; //The keys the user is currently pressing
 var keysCheckInterval; //The interval to check which keys have been pressed down
-var playingWithMouse = null;
+var playingWithMouse = null; //If the user is using mouse or keyboard
 
-var bubbleX;
-var bubbleY;
+var bubbleX; //X position of the bubble
+var bubbleY; //Y position of the bubble
 
-var playerScore = 0;
+var playerScore = 0; //Players score
 var scoreLoopCounter = 0; //The loop to slow down the score increment
 var isDead = true; //Value for if the bubble is dead 
 
@@ -38,6 +39,8 @@ function startGame(isMouse){
 	toggleCursor(false);
 	gameLines = [];
 	playerScore = 0;
+	
+	$('#inGameHelp').fadeIn(500);
 	
 	bubbleX = Math.round((canvasWidth/2)-bubbleRadius);
 	bubbleY = Math.round((canvasHeight/2)-bubbleRadius);
@@ -100,39 +103,43 @@ function checkKeyboardKeys(){
 }
 
 function moveBubbleTo(x, y){
-	if(!isDead){
-		if((x<canvasWidth-bubbleSprite.width)&&(x>0)&&(y>0)&&(y<canvasHeight-bubbleSprite.height)){
-			bubbleX = x;
-			bubbleY = y;
-			paint();
+	if(!gameIsPaused){
+		if(!isDead){
+			if((x<canvasWidth-bubbleSprite.width)&&(x>0)&&(y>0)&&(y<canvasHeight-bubbleSprite.height)){
+				bubbleX = x;
+				bubbleY = y;
+				paint();
+			}
+		}else{
+			deadSequence();
 		}
-	}else{
-		deadSequence();
 	}
 }
 
 function update(){
-	for (var i = 0; i < gameLines.length; i++) {
-		gameLines[i].position++;
-		if(gameLines[i].position>canvasHeight){
-			gameLines.shift();
-			gameLines.push(createNewLine(0));
+	if(!gameIsPaused){
+		for (var i = 0; i < gameLines.length; i++) {
+			gameLines[i].position++;
+			if(gameLines[i].position>canvasHeight){
+				gameLines.shift();
+				gameLines.push(createNewLine(0));
+			}
 		}
-	}
-	paint();
-	if(!isDead){
-		setTimeout(update, getGameSpeed());
-	}else{
-		deadSequence();
-	}
-	if(scoreLoopCounter>12){
-		checkAchievmentProgress(playerScore, getGamesPlayed());
-		$('#score').html('Current Score: ' + ++playerScore);
-		$('#speed').html('Speed: ' + ((startingSpeed+2)/(getGameSpeed()+2)).toFixed(2) + 'x');
-		scoreLoopCounter = 0;
-	}else{
-		scoreLoopCounter++;
-	}		
+		paint();
+		if(!isDead){
+			setTimeout(update, getGameSpeed());
+		}else{
+			deadSequence();
+		}
+		if(scoreLoopCounter>12){
+			checkAchievmentProgress(playerScore, getGamesPlayed());
+			$('#score').html('Current Score: ' + ++playerScore);
+			$('#speed').html('Speed: ' + ((startingSpeed+2)/(getGameSpeed()+2)).toFixed(2) + 'x');
+			scoreLoopCounter = 0;
+		}else{
+			scoreLoopCounter++;
+		}	
+	}	
 }
 
 function paint()
@@ -189,17 +196,15 @@ function getGameSpeed(){
 function isLineCollision(line){
 
 	if((Math.abs(line.position-bubbleY-5)<=bubbleRadius)||(Math.abs(line.position-bubbleY-20)<=bubbleRadius)){
+		//Work out the true center of the circle
 		var trueBubbleX = (bubbleX+bubbleRadius);
 		var trueBubbleY = (bubbleY+bubbleRadius);
-	
 		//Check if we have a left hand spide
 		if(line.leftLineSize>=spikeSprite.width){
-
 			//Check if we have directly hit the left hand line
 			if(line.leftLineSize>=trueBubbleX){
 				return true;
 			}
-			
 			//Check the edge of left hand line
 			//Works by measuring the distance between the edge of the line and the center of the bubble
 			//if the distance is less than the radius we have a collision
@@ -212,14 +217,11 @@ function isLineCollision(line){
 		
 		//Check if we have a right hand spide
 		if(line.rightLineSize>=spikeSprite.width){
-			
 			var rightLinePos = (canvasWidth-line.rightLineSize); //X coord of that start of the right line
-			
 			//Check if we have directly hit the right hand line
 			if(rightLinePos<trueBubbleX){
 				return true;
 			}
-			
 			//Check the edge of right hand line
 			var topDistanceToCircle = Math.sqrt(Math.pow(trueBubbleX-rightLinePos, 2)+Math.pow(trueBubbleY-line.position, 2));
 			var bottomDistanceToCircle = Math.sqrt(Math.pow(trueBubbleX-rightLinePos+5, 2)+Math.pow(trueBubbleY-line.position-15, 2));
@@ -229,11 +231,13 @@ function isLineCollision(line){
 		}
 		
 	}
+	//No collision this time
 	return false;
 }
 
 function deadSequence(){
 	popSound.play();
+	$('#inGameHelp').fadeOut(200);
 	toggleCursor(true);
 	if(!playingWithMouse){
 		clearInterval(keysCheckInterval);
@@ -279,17 +283,6 @@ function getGamesPlayed(){
 		localStorage.gamesPlayed = 0;
 	return parseInt(localStorage.gamesPlayed);
 }
-
-
-//Function originally found at http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/
-//Was edited to work with my game
-function getMousePos(event) {
-	var rect = canvas.getBoundingClientRect();
-		return {
-			x: event.clientX - rect.left,
-			y: event.clientY - rect.top
-	};
-}
 	
 $(document).keydown(function(e){
 	if(!playingWithMouse){
@@ -301,5 +294,21 @@ $(document).keydown(function(e){
 	if(!playingWithMouse){
 		delete pressedKeys[e.which];
 	}
+	if(!isDead){
+		console.log(e.which);
+		if((e.which==72)||(e.which==191)){
+			gameIsPaused = true;
+			showHelpPage();
+		}
+	}
 });
 	
+//Function originally found at http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/
+//Was edited to work with my game
+function getMousePos(event) {
+	var rect = canvas.getBoundingClientRect();
+		return {
+			x: event.clientX - rect.left,
+			y: event.clientY - rect.top
+	};
+}

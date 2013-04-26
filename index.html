@@ -40,27 +40,28 @@
 			</div>
 			<div id="submitScore">
 				<p>Score: <span id="postScore">0</span></p>
-				<p><input id="gameText" type="text" placeholder="Enter name"></p>
+				<p><input id="nameText" type="text" placeholder="Enter name"></p>
 				<ul>
-					<li><a href="#" id="postScore">Submit Score</a></li>
-
+					<li><a href="#" id="postScoreSubmit">Submit Score</a></li>
 				</ul>
 			</div>
 			<div id="highscores">
 				<ul>
-					<li>1. Aidan (Score: 1230)</li>
-					<li>2. Test (Score: 830)</li>
-					<li>3. Aidan (Score: 630)</li>
-					<li>4. Test (Score: 420)</li>
-					<li>5. Aidan (Score: 120)</li>
-					<li>6. Test (Score: 99)</li>
-					<li>7. Aidan (Score: 70)</li>
-					<li>8. Test (Score: 40)</li>
-					<li>9. Aidan (Score: 30)</li>
-					<li>10. Test (Score: 29)</li>
-					<li><a href="#" onclick="backToMenu(); return false;">Back to menu</a></li>
 				</ul>
 			</div>
+			<div id="helpPage">
+				<h1>How to play</h1>
+				<p>Bubble float is a really simple game to play. To start the game you must choose if you want to play with your mouse or keyboard.</p>
+				<p>Once you have chosen your controls the game will begin. The aim of the game is to get the bubble to the highest you possibly can by dodging the spikes</p>
+				<p>As you progress through the game you will notice the game getting faster until it reaches a maximum of 3x the start speed.</p>
+				<p>As you play the game you will notice power ups on the screen, if you hit the power ups you will be given an in game bonus. Below is what each power up does.</p>
+				<p>The armour power up (Green icon) gives you invisibility for 10 seconds!</p>
+				<p>The score increaser (Red icon) gives your twice as much score per second!</p>
+				<p>The slow time power up (Blue icon) slows the speed at which the bubble floats up!</p>
+				<p>When your bubble pops you will be given the opportunity to submit your score. This will submit your score to the leader-board of all players. You can see if you came within the top 10 by clicking highscores on the menu</p>
+				<a href="#" id="continueGame">Continue</a>
+			</div>
+			<div id="inGameHelp"></div>
 		</div>
 		
 		<!-- jQuery -->
